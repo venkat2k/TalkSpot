@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <title> {{ data[0] }} </title>
+    </head>
+    <body>
+        {{data[0]}}
+        <br>
+        {{data[1]}}
+        <br>
+        {{data[2]}}
+        <br>
+        <hr>
+        {% for talk in talks %}
+        <div class = "talk">
+            {{ talk[0] }}
+            {{ talk[1] }}
+            {{ talk[2] }}
+            {{ talk[3] }}
+            {{ talk[4] }}
+        </div>
+        {% endfor %}
+    </body>
+</html>

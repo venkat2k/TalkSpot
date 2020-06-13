@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <title>Homepage</title>
+        <title>{{ data[0] }}</title>
     </head>
     <body>
         {% with messages = get_flashed_messages() %}
@@ -17,25 +17,31 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        <a href="{{ url_for('logout') }}"> Logout </a>
-        {% if data == None %}
-        <form action="{{ url_for('make_entry') }}" method="POST">
+        <div class = "talk">
+            {{ data[0] }}
+            {{ data[1] }}
+            {{ data[2] }}
+            {{ data[3] }}
+            {{ data[4] }}
+        </div>
+        <hr>
+        {% if content == None %}
+        <form action="{{ url_for('enter_comment', talkid = data[2]) }}" method="POST">
             <input type="text" name="content" placeholder="Write your thoughts" required>
             <input type="submit" value="POST">
         </form>
         {% else %}
-        <form action="{{ url_for('make_entry') }}" method="POST">
-            <input type="text" name="content" placeholder="Write your thoughts" required value={{ data['content'] }}>
+        <form action="{{ url_for('enter_comment', talkid = data[2]) }}" method="POST">
+            <input type="text" name="content" placeholder="Write your thoughts" required value="{{ fill['content'] }}">
             <input type="submit" value="POST">
         </form>
         {% endif %}
-        {% for talk in recents %}
-        <div class = "talk">
-            {{ talk[0] }}
-            {{ talk[1] }}
-            {{ talk[2] }}
-            {{ talk[3] }}
-            {{ talk[4] }}
+        <hr>
+        {% for comment in comments %}
+        <div class = "comment">
+            {{ comment[0] }} <br>
+            {{ comment[1] }} <br>
+            {{ comment[2] }} <br>
         </div>
         {% endfor %}
     </body>
