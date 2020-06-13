@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <title>Homepage</title>
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {{message}}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <a href="{{ url_for('logout') }}"> Logout </a>
+        {% if data == None %}
+        <form action="{{ url_for('make_entry') }}" method="POST">
+            <input type="text" name="content" placeholder="Write your thoughts" required>
+            <input type="submit" value="POST">
+        </form>
+        {% else %}
+        <form action="{{ url_for('make_entry') }}" method="POST">
+            <input type="text" name="content" placeholder="Write your thoughts" required value={{ data['content'] }}>
+            <input type="submit" value="POST">
+        </form>
+        {% endif %}
+    </body>
+</html>
