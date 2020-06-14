@@ -10,6 +10,20 @@ app.secret_key = "secret key"
 connection = pymysql.connect(host="localhost", user="root", passwd="", database="talkspot")
 cursor = connection.cursor()
 
+
+f = open("words.txt", "r")
+filecontent = f.read()
+words = filecontent.split("\n")
+f.close()
+
+def analyze(text):
+    text = text.split()
+    for word in words:
+        for x in text:
+            if x == word:
+                return 0
+    return 1
+
 @app.route("/")
 def index():
     if "username" not in session:
@@ -93,12 +107,12 @@ def make_entry():
         data = request.form
         session['data'] = data
         return redirect(url_for('index'))
+    sentiment = analyze(content)
     username = session['username']
     likes = 0
     now = datetime.datetime.now()
     timestamp = now.strftime("%H:%M, %d-%m-%Y")
-    print(username, content, timestamp, likes)
-    sql = """INSERT INTO talks (username, text, timestamp, likes) VALUES('{0}', "{1}", '{2}', {3})""".format(username, content, timestamp, likes)
+    sql = """INSERT INTO talks (username, text, timestamp, likes, sentiment) VALUES('{0}', "{1}", '{2}', {3}, {4})""".format(username, content, timestamp, likes, sentiment)
     cursor.execute(sql)
     connection.commit()
     return redirect(url_for("index"))
@@ -114,7 +128,7 @@ def show_user(username):
     if len(data) == 0:
         flash("No such user exists.")
         return redirect(url_for('index'))
-    sql = "SELECT * FROM talks WHERE username = '{0}'".format(username)
+    sql = "SELECT * FROM talks WHERE username = '{0}' ORDER BY talkid desc".format(username)
     cursor.execute(sql)
     talks = cursor.fetchall()
     username = session["username"]
@@ -131,7 +145,7 @@ def show_talk(talkid):
     if len(data) == 0:
         flash("No such talkspot exists.")
         return redirect(url_for('index'))
-    sql = "SELECT * FROM comments WHERE talkid = {0}".format(talkid)
+    sql = "SELECT * FROM comments WHERE talkid = {0} ORDER BY commentid desc".format(talkid)
     cursor.execute(sql)
     comments = cursor.fetchall()
     username = session["username"]
@@ -152,8 +166,9 @@ def enter_comment(talkid):
         data = request.form
         session['comment'] = data
         return redirect(url_for('show_talk', talkid=talkid))
+    sentiment = analyze(content)
     username = session["username"]
-    sql = """INSERT INTO comments (username, talkid, text, likes) VALUES ('{0}', {1}, "{2}", {3})""".format(username, talkid, content, 0)
+    sql = """INSERT INTO comments (username, talkid, text, likes, sentiment) VALUES ('{0}', {1}, "{2}", {3}, {4})""".format(username, talkid, content, 0, sentiment)
     cursor.execute(sql)
     connection.commit()
     return redirect(url_for('show_talk', talkid=talkid))

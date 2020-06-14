@@ -24,6 +24,11 @@
         {% endif %}
         {% endwith %}
         <div class = "talk">
+            {% if data[5] == 0 %}
+            <span style="float: right;">&#128520</span>
+            {% else %}
+            <span style="float: right;">&#128515</span>
+            {% endif %}
             <a href="{{ url_for('show_user', username=data[0]) }}">@{{ data[0] }}</a>
             <p style="font-size: 13px;">{{ data[4] }}</p>
             <em>{{ data[1] }}</em> <br><br>
@@ -47,6 +52,11 @@
         <h3 style="margin-left: 35px">Comments</h3>
         {% for comment in comments %}
         <div class = "talk">
+            {% if comment[5] == 0 %}
+            <span style="float: right;">&#128520</span>
+            {% else %}
+            <span style="float: right;">&#128515</span>
+            {% endif %}
             <a href="{{ url_for('show_user', username=data[0]) }}">@{{ comment[3] }}</a> <br><br>
             <em>{{ comment[1] }}</em> <br><br>
             <a href="{{ url_for('like_comment', commentid=comment[4]) }}" class="upvote">Upvote</a>
