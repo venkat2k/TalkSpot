@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+        <title>Search User</title>
+    </head>
+    <body>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li style="float: right"><a href="{{ url_for('logout') }} ">Logout</a></li>
+            <li style="float: right"><a href="{{ url_for('show_user', username=username) }}">@{{ username }}</a></li>
+            <li style="float: left"><a href="{{ url_for('search') }}">Search</a></li>
+        </ul>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                {{message}}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="searchbar">
+            <form action="{{ url_for('search') }}" method="POST">
+                <input style="500px;" type="text" placeholder="Search for a user..." name="search_text" required>
+                <input type="submit" value="Search" class="btn btn-dark">
+            </form>
+        </div>
+
+        {% for user in users %}
+        <div class="talk">
+            <a href="{{ url_for('show_user', username=user[0]) }}">@{{ user[0] }}</a><br>
+            <span>{{ user[1] }} <span><br>
+            <span>{{ user[2] }}</span><br>    
+            <p>From: {{ user[4] }}</p>
+        </div>
+        {% endfor %}
+    </body>
+</html>

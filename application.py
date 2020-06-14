@@ -265,5 +265,21 @@ def like_talk2(talkid):
     connection.commit()
     return redirect(url_for("show_talk", talkid=talkid))
 
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if "username" not in session:
+        flash("Login to Search.")
+        return redirect(url_for("index"))
+    searchtext = request.form.get("search_text")
+    print(searchtext)
+    sql = "SELECT * FROM users WHERE username LIKE '%{0}%' OR displayname LIKE '%{0}%'".format(searchtext)
+    print(sql)
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print(result)
+    username = session["username"]
+    return render_template("search.html", users=result, username=username)
+
+
 if __name__ == "__main__":
     app.run()

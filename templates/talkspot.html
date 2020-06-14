@@ -12,6 +12,7 @@
             <li><a href="{{ url_for('index') }}">Home</a></li>
             <li style="float: right"><a href="{{ url_for('logout') }} ">Logout</a></li>
             <li style="float: right"><a href="{{ url_for('show_user', username=username) }}">@{{ username }}</a></li>
+            <li style="float: left"><a href="{{ url_for('search') }}">Search</a></li>
         </ul>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
