@@ -3,7 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
         <title>Signup</title>
     </head>
     <body>
@@ -17,52 +18,50 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        
-        <a href="{{ url_for('login') }}">Already a user?</a>
+
         {% if data == None %}
-        <form action="{{ url_for('signup') }}" method = "POST">
-            <label>Username</label><br>
-            <input type="text" name="username" autofocus required>
-            <br>
-            <label>Display Name</label><br>
-            <input type="text" name="displayname" required>
-            <br>
-            <label>Email ID</label><br>
-            <input type="email" name="emailid" required>
-            <br>
-            <label>City Name</label><br>
-            <input type="text" name="location" required>
-            <br>
-            <label>Password</label><br>
-            <input type="password" name="pwd1" required>
-            <br>
-            <label>Confirm Password</label><br>
-            <input type="password" name="pwd2" required>
-            <br>
-            <input type="submit" value="Signup">
-        </form>
+        <div class="signup">
+            <h2>SIGNUP</h2>
+            <form action="{{ url_for('signup') }}" method = "POST">
+                <input type="text" name="username" autofocus required placeholder="Username">
+                <br>
+                <input type="text" name="displayname" required placeholder="Display Name">
+                <br>
+                <input type="email" name="emailid" required placeholder="Email ID">
+                <br>
+                <input type="text" name="location" required placeholder="City">
+                <br>
+                <input type="password" name="pwd1" required placeholder="Password">
+                <br>
+                <input type="password" name="pwd2" required placeholder="Confirm Password">
+                <br>
+                <input type="submit" value="Signup" class="btn btn-dark">
+            </form>
+            <a href="{{ url_for('login') }}">Already a user?</a>
+        </div>
         {% else %}
+        <div class="signup">
+        <h2>SIGNUP</h2>
         <form action="{{ url_for('signup') }}" method = "POST">
-            <label>Username</label><br>
-            <input type="text" name="username" autofocus required value = "{{ data['username'] }}">
+            <input type="text" name="username" autofocus required value = "{{ data['username'] }}" placeholder="Username">
             <br>
-            <label>Display Name</label><br>
-            <input type="text" name="displayname" required value = "{{ data['displayname'] }}">
+            <input type="text" name="displayname" required value = "{{ data['displayname'] }}" placeholder="Display Name">
             <br>
-            <label>Email ID</label><br>
-            <input type="email" name="emailid" required value = "{{ data['emailid'] }}">
+            <input type="email" name="emailid" required value = "{{ data['emailid'] }}" placeholder="Email ID">
             <br>
-            <label>City Name</label><br>
-            <input type="text" name="location" required value= "{{ data['location'] }}">
+            <input type="text" name="location" required value= "{{ data['location'] }}" placeholder="City">
             <br>
-            <label>Password</label><br>
-            <input type="password" name="pwd1" required>
+            <input type="password" name="pwd1" required placeholder="Password">
             <br>
-            <label>Confirm Password</label><br>
-            <input type="password" name="pwd2" required>
+            <input type="password" name="pwd2" required placeholder="Confirm Password">
             <br>
-            <input type="submit" value="Signup">
-        </form>
+            <input type="submit" value="Signup" class="btn btn-dark">
+            </form>
+            <a href="{{ url_for('login') }}">Already a user?</a>
+        </div>
         {% endif %}
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </body>
 </html>

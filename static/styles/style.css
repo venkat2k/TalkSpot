@@ -1,0 +1,143 @@
+body
+{
+    background-color: #ede9e8;
+}
+.login
+{
+    height: 320px;
+    width: 300px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.signup
+{
+    background-color: white;
+    height: 500px;
+    width: 320px;
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    text-align: center;
+    /* padding-top: 50px; */
+    transform: translate(-50%, -50%);
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px grey;
+}
+.login input
+{
+    margin-bottom: 15px;
+}
+.signup input, .login input
+{
+    margin-bottom: 20px;
+    border-radius: 5px;
+    padding: 2px;
+    border: 1px solid black;
+    width: 200px;
+}
+
+.signup h2
+{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.login h2
+{
+    margin-top: 25px;
+    margin-bottom: 35px;
+}
+.signup input[type=submit], .login input[type=submit]
+{
+    width: 130px;   
+    height: 35px;
+}
+
+.talk
+{
+    width: 95%;
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 10px;
+    margin: auto;
+    margin-top: 10px;
+    padding: 10px;  
+}
+
+.upvote
+{
+    color: red;
+    font-size: 13px;
+}
+
+.upvote:hover
+{
+    text-decoration: none;
+}
+
+.post
+{
+    width: 95%;
+    height: 70px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    margin: auto;
+    margin-top: 10px;
+}
+ul 
+{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    color: white;
+    overflow: hidden;
+}
+
+li
+{
+    float: left;
+    padding-left: 0px;
+    display: inline;
+}
+
+li a 
+{
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) 
+{
+    background-color: #111;
+    text-decoration: none;
+    color:white;
+  
+}
+  
+  
+.active 
+{
+    background-color: #5e5e5c;
+}
+
+.user
+{
+    width: 100%;
+    background-color: white;
+    text-align: center;
+    padding-top: 15px; 
+    padding-bottom: 10px;
+    margin-bottom: 35px; 
+}

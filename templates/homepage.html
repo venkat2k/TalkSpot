@@ -3,10 +3,17 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
         <title>Homepage</title>
     </head>
     <body>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li style="float: right"><a href="{{ url_for('logout') }} ">Logout</a></li>
+            <li style="float: right"><a href="{{ url_for('show_user', username=username) }}">@{{ username }}</a></li>
+        </ul>
+
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
@@ -17,26 +24,41 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        <a href="{{ url_for('logout') }}"> Logout </a>
+        
+
         {% if data == None %}
-        <form action="{{ url_for('make_entry') }}" method="POST">
-            <input type="text" name="content" placeholder="Write your thoughts" required>
-            <input type="submit" value="POST">
-        </form>
+        <div style="text-align: center;">
+            <form action="{{ url_for('make_entry') }}" method="POST">
+                <input class="post" type="text" name="content" placeholder="Write your thoughts" required>
+                <br>
+                <input type="submit" value="POST" class="btn btn-dark" style="margin: 7px; width: 150px; margin-bottom: 40px;">
+            </form>
+        </div>
         {% else %}
-        <form action="{{ url_for('make_entry') }}" method="POST">
-            <input type="text" name="content" placeholder="Write your thoughts" required value={{ data['content'] }}>
-            <input type="submit" value="POST">
-        </form>
+        <div style="text-align: center;">
+            <form action="{{ url_for('make_entry') }}" method="POST">
+                <input class="post" type="text" name="content" placeholder="Write your thoughts" required value={{ data['content'] }}>
+                <br>
+                <input type="submit" value="POST" class="btn btn-dark" style="margin: 7px; width: 150px; margin-bottom: 40px;">
+            </form>
+        </div>
         {% endif %}
+
+        <h3 style="margin-left: 35px">Recents</h3>
         {% for talk in recents %}
         <div class = "talk">
-            {{ talk[0] }}
-            {{ talk[1] }}
-            {{ talk[2] }}
-            {{ talk[3] }}
-            {{ talk[4] }}
+            <a href="{{ url_for('show_user', username=talk[0]) }}">@{{ talk[0] }}</a>
+            <a style="font-size: 13px; padding-left: 10px;" href="{{ url_for('show_talk', talkid = talk[2]) }}">Open Talkspot   </a>
+            <p style="font-size: 13px;">{{ talk[4] }}</p>
+            <em>{{ talk[1] }}</em> <br><br>
+            <a href="{{ url_for('like_talk', talkid=talk[2]) }}" class="upvote">Upvote</a>
+            <span style="font-size: 13px;">{{ talk[3] }}</span>
+            <a style="font-size: 13px; padding-left: 10px;" href="{{ url_for('show_talk', talkid = talk[2]) }}">Comment</a>
         </div>
         {% endfor %}
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     </body>
 </html>

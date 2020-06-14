@@ -17,11 +17,12 @@ def index():
     sql = "SELECT * FROM talks ORDER BY talkid desc LIMIT 10;"
     cursor.execute(sql)
     recents = cursor.fetchall()
+    username = session['username']
     if 'data' in session:
         data = session['data']
         session.pop('data', None)
-        return render_template("homepage.html", data = data, recents = recents)
-    return render_template("homepage.html", data = None, recents = recents)
+        return render_template("homepage.html", data = data, recents = recents, username = username)
+    return render_template("homepage.html", data = None, recents = recents, username = username)
 
 @app.route("/login", methods = ["GET", "POST"])
 def login():
@@ -47,6 +48,7 @@ def logout():
 
 @app.route("/signup", methods = ["GET", "POST"])
 def signup():
+    errors = ""
     if "username" in session:
         return redirect(url_for("login"))
     if request.method == "POST":
@@ -59,22 +61,24 @@ def signup():
         redo = False
         if pwd1 != pwd2:
             redo = True
-            flash("Passwords do not match.")
+            errors += "Passwords do not match. "
         sql = "SELECT * FROM users WHERE username = '{0}'".format(username)
         cursor.execute(sql)
         result = cursor.fetchall()
         if len(result) != 0:
             redo = True
-            flash("Username already exists.")
+            errors += "Username already exists. "
         sql = "SELECT * FROM users WHERE email = '{0}'".format(emailid)
         cursor.execute(sql)
         result = cursor.fetchall()
         if len(result) != 0:
             redo = True
-            flash("Email ID is already in use.")
+            errors += "Email ID is already in use."
         if redo:
+            flash(errors)
             return render_template("signup.html", data = request.form)
-        sql = "INSERT INTO users (username, displayname, email, password, location) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}')".format(username, displayname, emailid, pwd1, location)
+        displayname = displayname.title()
+        sql = """INSERT INTO users (username, displayname, email, password, location) VALUES ("{0}", "{1}", "{2}", "{3}", "{4}")""".format(username, displayname, emailid, pwd1, location)
         cursor.execute(sql)
         connection.commit()
         session['username'] = username
@@ -93,14 +97,18 @@ def make_entry():
     likes = 0
     now = datetime.datetime.now()
     timestamp = now.strftime("%H:%M, %d-%m-%Y")
-    sql = "INSERT INTO talks (username, text, timestamp, likes) VALUES('{0}', '{1}', '{2}', {3});".format(username, content, timestamp, likes)
+    print(username, content, timestamp, likes)
+    sql = """INSERT INTO talks (username, text, timestamp, likes) VALUES('{0}', "{1}", '{2}', {3})""".format(username, content, timestamp, likes)
     cursor.execute(sql)
     connection.commit()
     return redirect(url_for("index"))
 
 @app.route("/users/<username>", methods = ["GET"])
 def show_user(username):
-    sql = "SELECT displayname, email, location FROM users WHERE username = '{0}'".format(username)
+    if "username" not in session:
+        flash("Login to view.")
+        return redirect(url_for("login"))
+    sql = "SELECT username, displayname, email, location FROM users WHERE username = '{0}'".format(username)
     cursor.execute(sql)
     data = cursor.fetchall()
     if len(data) == 0:
@@ -109,10 +117,14 @@ def show_user(username):
     sql = "SELECT * FROM talks WHERE username = '{0}'".format(username)
     cursor.execute(sql)
     talks = cursor.fetchall()
-    return render_template("user.html", data = data[0], talks = talks)
+    username = session["username"]
+    return render_template("user.html", data = data[0], talks = talks, username=username)
 
 @app.route("/talkspot/<int:talkid>", methods = ["GET", "POST"])
 def show_talk(talkid):
+    if "username" not in session:
+        flash("Login to view.")
+        return redirect(url_for("login"))
     sql = "SELECT * FROM talks WHERE talkid = {0}".format(talkid)
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -122,24 +134,121 @@ def show_talk(talkid):
     sql = "SELECT * FROM comments WHERE talkid = {0}".format(talkid)
     cursor.execute(sql)
     comments = cursor.fetchall()
+    username = session["username"]
     if "comment" in session:
         fill = session['comment']
         session.pop("comment", None)
-        return render_template("talkspot.html", data = data[0], comments = comments, fill = fill)
-    return render_template("talkspot.html", data = data[0], comments = comments, fill = None)
+        return render_template("talkspot.html", data = data[0], comments = comments, fill = fill, username = username)
+    return render_template("talkspot.html", data = data[0], comments = comments, fill = None, username = username)
 
 @app.route("/entercomment/<int:talkid>", methods = ["POST"])
 def enter_comment(talkid):
+    if "username" not in session:
+        flash("Login to comment.")
+        return redirect(url_for("login"))
     content = request.form.get("content")
     if len(content) > 20:
         flash("The length of your comment is limited to 200 characters. Try again.")
         data = request.form
         session['comment'] = data
         return redirect(url_for('show_talk', talkid=talkid))
-    sql = "INSERT INTO comments (talkid, text, likes) VALUES ({0}, '{1}', {2})".format(talkid, content, 0)
+    username = session["username"]
+    sql = """INSERT INTO comments (username, talkid, text, likes) VALUES ('{0}', {1}, "{2}", {3})""".format(username, talkid, content, 0)
     cursor.execute(sql)
     connection.commit()
     return redirect(url_for('show_talk', talkid=talkid))
     
+@app.route("/addlikecmt/<commentid>", methods = ["GET"])
+def like_comment(commentid):
+    if "username" not in session:
+        flash("Login to upvote.")
+        return redirect(url_for("login"))
+    sql = "SELECT * FROM likes WHERE type = {0} AND id = {1} AND username = '{2}'".format(1, commentid, session["username"])
+    cursor.execute(sql)
+    count = cursor.fetchall()
+    sql = "SELECT likes, talkid from comments WHERE commentid = {0}".format(commentid)
+    cursor.execute(sql)
+    likes = cursor.fetchall()
+    talkid = likes[0][1]
+    likes = likes[0][0]
+    if len(count) != 0:
+        flash("Can be upvoted only once.")
+        return redirect(url_for("show_talk", talkid = talkid))
+    sql = "UPDATE comments SET likes = {0} WHERE commentid = {1}".format(likes + 1, commentid)
+    cursor.execute(sql)
+    sql = "INSERT INTO likes (type, id, username) VALUES ({0}, {1}, '{2}')".format(1, commentid, session['username'])
+    cursor.execute(sql)
+    connection.commit()
+    return redirect(url_for("show_talk", talkid = talkid))
+
+@app.route("/addliketalk/<talkid>", methods = ["GET"])
+def like_talk(talkid):
+    if "username" not in session:
+        flash("Login to upvote.")
+        return redirect(url_for("login"))
+    sql = "SELECT * FROM likes WHERE type = {0} AND id = {1} AND username = '{2}'".format(0, talkid, session["username"])
+    cursor.execute(sql)
+    count = cursor.fetchall()
+    if len(count) != 0:
+        flash("Can be upvoted only once.")
+        return redirect(url_for("index"))
+    sql = "SELECT likes, username FROM talks WHERE talkid = {0}".format(talkid)
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    likes = result[0][0]
+    username = result[0][1]
+    sql = "UPDATE talks SET likes = {0} WHERE talkid = {1}".format(likes + 1, talkid)
+    cursor.execute(sql)
+    sql = "INSERT INTO likes (type, id, username) VALUES ({0}, {1}, '{2}')".format(0, talkid, session['username'])
+    cursor.execute(sql)
+    connection.commit()
+    return redirect(url_for("index"))
+
+@app.route("/addliketalk1/<talkid>", methods = ["GET"])
+def like_talk1(talkid):
+    if "username" not in session:
+        flash("Login to upvote.")
+        return redirect(url_for("login"))
+    sql = "SELECT * FROM likes WHERE type = {0} AND id = {1} AND username = '{2}'".format(0, talkid, session["username"])
+    cursor.execute(sql)
+    count = cursor.fetchall()
+    sql = "SELECT likes, username FROM talks WHERE talkid = {0}".format(talkid)
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    likes = result[0][0]
+    username = result[0][1]
+    if len(count) != 0:
+        flash("Can be upvoted only once.")
+        return redirect(url_for("show_user", username=username))
+    sql = "UPDATE talks SET likes = {0} WHERE talkid = {1}".format(likes + 1, talkid)
+    cursor.execute(sql)
+    sql = "INSERT INTO likes (type, id, username) VALUES ({0}, {1}, '{2}')".format(0, talkid, session['username'])
+    cursor.execute(sql)
+    connection.commit()
+    return redirect(url_for("show_user", username=username))
+
+@app.route("/addliketalk2/<talkid>", methods = ["GET"])
+def like_talk2(talkid):
+    if "username" not in session:
+        flash("Login to upvote.")
+        return redirect(url_for("login"))
+    sql = "SELECT * FROM likes WHERE type = {0} AND id = {1} AND username = '{2}'".format(0, talkid, session["username"])
+    cursor.execute(sql)
+    count = cursor.fetchall()
+    if len(count) != 0:
+        flash("Can be upvoted only once.")
+        return redirect(url_for("show_talk", talkid=talkid))
+    sql = "SELECT likes, username FROM talks WHERE talkid = {0}".format(talkid)
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    likes = result[0][0]
+    username = result[0][1]
+    sql = "UPDATE talks SET likes = {0} WHERE talkid = {1}".format(likes + 1, talkid)
+    cursor.execute(sql)
+    sql = "INSERT INTO likes (type, id, username) VALUES ({0}, {1}, '{2}')".format(0, talkid, session['username'])
+    cursor.execute(sql)
+    connection.commit()
+    return redirect(url_for("show_talk", talkid=talkid))
+
 if __name__ == "__main__":
     app.run()

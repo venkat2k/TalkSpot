@@ -3,7 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
         <title>Login</title>
     </head>
     <body>
@@ -17,15 +18,19 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        <a href="{{ url_for('signup') }}">Don't have an account?</a>
-        <form action="{{ url_for('login') }}" method = "POST">
-            <label>Username</label><br>
-            <input type="text" name="username" autofocus required>
-            <br>
-            <label>Password</label><br>
-            <input type="password" name="pwd" required>
-            <br>
-            <input type="submit" value="Login">
-        </form>
+        <div class="login">
+            <h2>LOGIN</h2>
+            <form action="{{ url_for('login') }}" method = "POST">
+                <input type="text" name="username" autofocus required placeholder="Username">
+                <br>
+                <input type="password" name="pwd" required placeholder="Password">
+                <br>
+                <input type="submit" value="Login" class="btn btn-dark">
+            </form>
+            <a href="{{ url_for('signup') }}">Don't have an account?</a>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </body>
 </html>
