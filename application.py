@@ -102,7 +102,7 @@ def signup():
 @app.route("/enter", methods = ["POST"])
 def make_entry():
     content = request.form.get("content")
-    if len(content) > 20:
+    if len(content) > 200:
         flash("The length of your post is limited to 200 characters. Try again.")
         data = request.form
         session['data'] = data
@@ -161,7 +161,7 @@ def enter_comment(talkid):
         flash("Login to comment.")
         return redirect(url_for("login"))
     content = request.form.get("content")
-    if len(content) > 20:
+    if len(content) > 200:
         flash("The length of your comment is limited to 200 characters. Try again.")
         data = request.form
         session['comment'] = data
